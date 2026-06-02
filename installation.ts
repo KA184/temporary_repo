@@ -214,7 +214,7 @@ export async function Connector_Installation(item: Connector_Installation_Descri
             await $`docker compose up -d `.cwd(linked_consumer.Service_Folder);
         }
         if (linked_producer != undefined) {
-            await Util.sleep(item.Init_Settings.Delay_After_Connector_Start);
+            await Util.sleep(item.Init_Settings.Delay_After_Connector_Start??5000);
 
             let dataset = Service_Scripts.Build_Dataset(
                 item.Dataspace_Name,

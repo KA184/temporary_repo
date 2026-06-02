@@ -71,7 +71,7 @@ export type Connector_Installation_Descriptor = {
 
     Init_Settings: {
 
-        Delay_After_Connector_Start:number,
+        Delay_After_Connector_Start:number|null,
         Linked_Producer_Service: Linked_Producer_Service | null,
         Linked_Consumer_Service: Linked_Consumer_Service | null
     }
