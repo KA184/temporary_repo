@@ -162,7 +162,7 @@ export namespace File_Converters {
             `KEYCLOAK_ADMIN_PASSWORD=${env.KEYCLOAK_ADMIN_PASSWORD}`,
             `KC_LOG_LEVEL=${env.KC_LOG_LEVEL}`,
             `KC_HOSTNAME=${env.KC_HOSTNAME}`,
-            `KC_PROXY_HEADERS=xforwarded #Use this environment variable starting version 24`,
+            `KC_PROXY_HEADERS=xforwarded`,
             `KC_HTTP_ENABLED=true`,
             `KC_HOSTNAME_STRICT=false`,
             `KC_HOSTNAME_STRICT_HTTPS=false`,
