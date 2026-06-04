@@ -12,5 +12,4 @@ export { Build } from "./builder.ts";
 export { Util } from "./Util.ts";
 
 export { CLI_Runner2 } from "./cli_runner2.ts";
-
-export let version=500;
+export { CLI_Runner } from "./cli_runner.ts";
