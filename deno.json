@@ -1,0 +1,79 @@
+{
+  "tasks": {
+    "dev": "deno run -A --node-modules-dir npm:vite",
+    "build": "deno run -A --node-modules-dir npm:vite build",
+    "preview": "deno run -A --node-modules-dir npm:vite preview",
+    "serve": "deno run --allow-net --allow-read jsr:@std/http@1/file-server dist/"
+  },
+  "compilerOptions": {
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "jsxImportSourceTypes": "@types/react",
+    "noImplicitAny": false,
+    "strict": false
+  },
+    "sloppyImports": true,
+     
+  "imports": {
+    "@std/yaml": "jsr:@std/yaml@^1.1.1",
+    "dax": "jsr:@david/dax@^0.47.0",
+    "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.5",
+    "@emotion/css": "npm:@emotion/css@^11.13.5",
+    "@fullcalendar/daygrid": "npm:@fullcalendar/daygrid@^6.1.20",
+    "@fullcalendar/interaction": "npm:@fullcalendar/interaction@^6.1.20",
+    "@fullcalendar/react": "npm:@fullcalendar/react@^6.1.20",
+    "@fullcalendar/timegrid": "npm:@fullcalendar/timegrid@^6.1.20",
+    "@headlessui/react": "npm:@headlessui/react@^2.2.9",
+    "@radix-ui/react-dropdown-menu": "npm:@radix-ui/react-dropdown-menu@^2.1.16",
+    "@std/assert": "jsr:@std/assert@^1.0.19",
+    "@std/ini": "jsr:@std/ini@^0.225.2",
+    "@std/path": "jsr:@std/path@^1.1.4",
+    "date-fns": "npm:date-fns@^4.1.0",
+    "date-fns-tz": "npm:date-fns-tz@^3.2.0",
+    "downloadjs": "npm:downloadjs@^1.4.7",
+    "emotion": "npm:emotion@^11.0.0",
+    "es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.43.0",
+    "hookrouter": "npm:hookrouter@^1.2.5",
+    "lodash": "npm:lodash@4.17.15",
+    "remeda": "jsr:@remeda/remeda@^2.33.1",
+    "@types/react": "npm:@types/react@^19.2.7",
+    "@types/react-dom": "npm:@types/react-dom@^19.2.3",
+    "@vitejs/plugin-react": "npm:@vitejs/plugin-react@^5.1.2",
+    "bitecs": "npm:bitecs@^0.4.0",
+    "lodash-es": "npm:lodash-es@^4.17.22",
+    "react": "npm:react@^19.2.1",
+    "react-dom": "npm:react-dom@^19.2.1",
+    "rsuite": "npm:rsuite@^6.1.2",
+    "ts-pattern": "npm:ts-pattern@^5.9.0",
+    "uplot": "npm:uplot@^1.6.32",
+    "uplot-react": "npm:uplot-react@^1.2.4",
+    "valtio": "npm:valtio@^2.3.0",
+    "vite": "npm:vite@^7.2.7",
+    "@std/http": "jsr:@std/http@^1.0.24",
+    "@std/http/file-server": "jsr:@std/http@^1.0.24/file-server",
+    "@std/fs/ensure-file": "jsr:@std/fs/ensure-file",
+    "./basyx/": "../UI/src/Common/basyx/",
+    "./ids/": "../UI/src/Common/ids_cli/"
+  },
+  "lint": {
+    "rules": {
+      "exclude": [
+        "no-unused-vars",
+        "no-explicit-any",
+        "prefer-const",
+        "no-empty-pattern",
+        "no-debugger",
+        "no-namespace"
+      ]
+    }
+  },
+  "unstable": [
+    "sloppy-imports"
+  ],
+  "unsafelyIgnoreCertificateErrors":true
+}
