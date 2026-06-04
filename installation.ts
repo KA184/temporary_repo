@@ -13,6 +13,7 @@ import { Internal, } from "./Types/api_types.ts";
 import { Connector_Installation_Descriptor, Connector_InstallationT, Hub_Installation_Descriptor, Hub_InstallationT, IDS_InstallationT, Test_Dataspace_InstallationT } from "./Types/installation_types.ts";
 import { Util, Util_IDS } from "./Util.ts";
 import { NGINX_Helper, To_NGINX_Config_C, To_NGINX_Config_H } from "./nginx.ts";
+import { CLI_Runner2 } from "./cli_runner2.ts";
 
 // We are using two connectors C1, C2 at local ports 5001,5002
 
@@ -85,7 +86,7 @@ export async function Hub_Installation(
 
     let create_folder = true;
 
-    let cli_runner_hub = await CLI_Runner(item.Client_Settings.Executable_Location, item.Client_Settings.Hub_Folder);
+    let cli_runner_hub = await CLI_Runner2(item.Client_Settings.Executable_Location, item.Client_Settings.Hub_Folder);
     //let api_client = null;//await Create_Atlantis_IDS_Client(ds_name, participant_id, `http://127.0.0.1:${port}`);
 
     let init = async () => {
@@ -176,7 +177,7 @@ export async function Connector_Installation(item: Connector_Installation_Descri
 
     let create_folder = true;
 
-    let cli_runner = await CLI_Runner(item.Client_Settings.Executable_Location, item.Client_Settings.Connector_Folder);
+    let cli_runner = await CLI_Runner2(item.Client_Settings.Executable_Location, item.Client_Settings.Connector_Folder);
     let api_client = await Create_Atlantis_IDS_Client(item.Dataspace_Name, env.IDS_CONNECTOR_ID, item.Client_Settings.Client_URL);
 
 
