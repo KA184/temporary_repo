@@ -1,6 +1,6 @@
 
 import { CLI_Config } from "./Types/config_types.ts";
-import { Connector_Installation_Descriptor, Hub_Installation_Descriptor } from "./Types/installation_types";
+import { Connector_Installation_Descriptor, Hub_Installation_Descriptor } from "./Types/installation_types.ts";
 
 
 
