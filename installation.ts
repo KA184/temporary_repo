@@ -10,7 +10,7 @@ import { CLI_Runner, CLI_RunnerT } from "./cli_runner.ts";
 
 
 import { Internal, } from "./Types/api_types.ts";
-import { Connector_Installation_Descriptor, Connector_InstallationT, Hub_Installation_Descriptor, Hub_InstallationT, IDS_InstallationT, Test_Dataspace_InstallationT } from "./Types/installation_types.ts";
+import { Connector_Installation_Descriptor, Connector_InstallationT, Hub_Installation_Descriptor, Hub_InstallationT, IDS_InstallationT, Linked_Service_Installation, Test_Dataspace_InstallationT } from "./Types/installation_types.ts";
 import { Util, Util_IDS } from "./Util.ts";
 import { NGINX_Helper, To_NGINX_Config_C, To_NGINX_Config_H } from "./nginx.ts";
 import { CLI_Runner2 } from "./cli_runner2.ts";
@@ -212,7 +212,9 @@ export async function Connector_Installation(item: Connector_Installation_Descri
         //#CHANGE HERE--START
         //await ci.start();//.Connector.Config.Set(env)
         if (linked_consumer != undefined) {
-            await $`docker compose up -d `.cwd(linked_consumer.Service_Folder);
+
+             await linked_consumer.Installation.Init(item);
+            //await $`docker compose up -d `.cwd(linked_consumer.Service_Folder);
         }
         if (linked_producer != undefined) {
             await Util.sleep(item.Init_Settings.Delay_After_Connector_Start??5000);
@@ -228,7 +230,8 @@ export async function Connector_Installation(item: Connector_Installation_Descri
 
 
             //if (!Util.isNullOrWhiteSpace(item.Child_Service.Service_Folder)) {
-            await $`docker compose up -d `.cwd(linked_producer.Service_Folder);
+            await linked_producer.Installation.Init(item);
+            // $`docker compose up -d `.cwd(linked_producer.Service_Folder);
             // }
         }
 
@@ -244,11 +247,13 @@ export async function Connector_Installation(item: Connector_Installation_Descri
         //#CHANGE HERE--START
         //if (!Util.isNullOrWhiteSpace(item.Child_Service.Service_Folder)) {
         if (linked_producer != undefined) {
-            await $`docker compose up -d `.cwd(linked_producer.Service_Folder);
+             await linked_producer.Installation.Start();
+            //await $`docker compose up -d `.cwd(linked_producer.Service_Folder);
             //}
         }
         if (linked_consumer != undefined) {
-            await $`docker compose up -d `.cwd(linked_consumer.Service_Folder);
+             await linked_consumer.Installation.Start();
+            //await $`docker compose up -d `.cwd(linked_consumer.Service_Folder);
 
         }
         //#CHANGE HERE--END
@@ -263,11 +268,13 @@ export async function Connector_Installation(item: Connector_Installation_Descri
         //#CHANGE HERE--START
         //if (!Util.isNullOrWhiteSpace(item.Child_Service.Service_Folder)) {
         if (linked_producer != undefined) {
-            await $`docker compose down  `.cwd(linked_producer.Service_Folder);
+            await linked_producer.Installation.Stop();
+            //await $`docker compose down  `.cwd(linked_producer.Service_Folder);
         }
 
         if (linked_consumer != undefined) {
-            await $`docker compose down  `.cwd(linked_consumer.Service_Folder);
+                await linked_consumer.Installation.Stop();
+            //await $`docker compose down  `.cwd(linked_consumer.Service_Folder);
         }
         //}
         //#CHANGE HERE--END
@@ -286,11 +293,14 @@ export async function Connector_Installation(item: Connector_Installation_Descri
         //#CHANGE HERE--START
         //if (!Util.isNullOrWhiteSpace(item.Child_Service.Service_Folder)) {
         if (linked_producer != undefined) {
-            await $`docker compose down --volumes `.cwd(linked_producer.Service_Folder);
+
+             await linked_producer.Installation.Drop();
+            //await $`docker compose down --volumes `.cwd(linked_producer.Service_Folder);
         }
 
         if (linked_consumer != undefined) {
-            await $`docker compose down --volumes `.cwd(linked_consumer.Service_Folder);
+                await linked_consumer.Installation.Drop();
+           // await $`docker compose down --volumes `.cwd(linked_consumer.Service_Folder);
         }
         //}
         //#CHANGE HERE--END
@@ -428,6 +438,25 @@ export function Test_Dataspace_Installation(
     } as Test_Dataspace_InstallationT
 }
 
+
+export function Linked_Installation_DOCKER(folder:string):Linked_Service_Installation{
+    let ret:Linked_Service_Installation={
+      Init: async function (parent: Connector_Installation_Descriptor) {
+         await $`docker compose up -d `.cwd(folder);
+      },
+      Start: async function ()  {
+          await $`docker compose up -d `.cwd(folder);
+      },
+      Drop: async function () {
+          await $`docker compose down --volumes `.cwd(folder);
+      },
+      Stop: async function ()  {
+          await $`docker compose down  `.cwd(folder);
+      }
+    };
+    return ret;
+
+}
 
 //export type Test_Dataspace_InstallationT = ReturnType<typeof Test_Dataspace_Installation>;
 

@@ -28,7 +28,7 @@ export namespace File_Converters {
             `TEMP_PWD= `,
             `CONN_STR=Data Source=file:/var/opt/sqlite/data/Database1.db;`,
             `ASPNETCORE_URLS=http://+:80;`,
-            `IDS_CONNECTOR_ID=${env.IDS_CONNECTOR_ID} `,
+            `IDS_CONNECTOR_ID=${env.IDS_CONNECTOR_ID}`,
             `IDS_HUB_URL=${env.IDS_HUB_URL}`,
             `IDS_HUB_API_KEY=${env.IDS_API_KEY}`,
             `LOG_LEVEL=${env.LOG_LEVEL}`,
@@ -50,7 +50,7 @@ export namespace File_Converters {
                 dockerfile: "Dockerfile.connector"
             }
         } :
-            { image: "atlantisengineering.azurecr.io/atl-data-space-hub:1.0.0" }
+            { image: "atlantisengineering.azurecr.io/atl-data-space-connector:1.0.0" }
             ;
         let ports = ["${USE_PORT}:80"];
 
@@ -68,7 +68,7 @@ export namespace File_Converters {
 
                     //...depends_on,
                     environment,
-                    entrypoint,
+                    //entrypoint, # todo : errors when you use it
                     command
                 },
 
@@ -134,7 +134,7 @@ export namespace File_Converters {
 
                     //...depends_on,
                     environment,
-                    entrypoint,
+                   // entrypoint, #todo errors when you use it
                     command
                 },
 

@@ -1,0 +1,156 @@
+
+- /ClientAPI/Search seems to rerurn '' on no matches which breaks things ,  Add_Dataset also returns the id even on error!!!!!!!!!!!
+- The obtain service must properly deal with missing requirements etc.
+
+- Do not forget the issue with initializing from locator routes and that you have the EE disabled
+- Settler on how the "fetch client" a) will use and keep tokens b) 
+
+
+- [CHECK IT]  what about those "start negotiation" APIs that don't immedieately return but there is a polling on the status
+
+
+- [LATER] handle suspended transfers
+- [LATER] other citeria such as the least used when deciding to "choose the first" ? should this be in the message?
+
+
+- The Generic Error might contain internal ones that are for example "Negotiation Failed" etc. Should we unit test or do something else about it?
+
+
+- [COFFER] counteroffer system (and keep the direct ones?)
+- [COFFER] get endpoint must return why it failed to create an agreement since if it is an "expanded" privillege offer they user should approve
+
+
+
+-------------------
+
+0. Further improvements in the filtering and "UI validations"          [DONE]
+
+1. Send email to Athanasia about the proposed output and make sure she agreed and it is to be used [ON HOLD]
+
+2. Work on the "Vocabulary Service" (to be replaced by the SFW) and the "Offer Service" (to be replaced by the Orchestrator)
+   Since I am already implementing test versions one thing to do is set them to use dataspace connectors
+ (***it will need some IDS work as well***)
+
+---------------------------------------------------------
+3. We need an extra talk with AIMEN at some point about "Resource Offers" since I didn't mention it in the meeting but their demo does not seem to describe how this is done at all
+4. Deal with "smaller misalignments in the schema"
+
+5. Deal with the "Ranking Service" (it will reuse lessons learned in (2)
+
+6. Work on the "Accept Offer" path the Orchestrator uses + SLA issues (AIMEN or other)
+
+
+7. [OPTIONALY] bring back the EE optimization functionalities which have been currently disabled, it should be noted that AIMEN says it will optimize something
+but the relevant calls I have seen from their demo do not seem to do it
+
+
+8. Integration phase
+
+ 
+
+
+
+--------------------------------
+
+
+First, regarding the start/end time issue, on Friday I’ll send you the correct format so you can test it.
+
+Regarding the offerId topic, it is an identifier that is created for each offer and is unique; therefore, OID1 and OID2 will have different values. Additionally, in this case, even if the products share the same capability, they are different products and therefore different offer requests (it could be the same capability but with different properties, such as a drilling capability with an M6 bit and another with an M7 bit). Since these are different requests, they not only have different offerId values, but also different proposalId values, as they are different offer request conversations.
+
+
+CURRENT PLAN
+---------------------
+
+
+
+---------------------------
+
+
+########################################################################################
+
+[IMPLICIT AT ALL STAGES] Deal with "smaller misalignments in the schema"
+
+########################################################################################
+Extra Execution Engine Work:
+
+- Use the internal "Obtain Data Supplier" to load all dependencies
+- Adjust EE deployment script
+
+
+[OPTIONAL] bring back the EE optimization functionalities which have been currently disabled it should be noted that AIMEN says it will optimize something
+but the relevant calls I have seen from their demo do not seem to do it
+
+
+########################################################################################
+Integration 1 : SFW/Vocabulary Service
+
+- Write an email explaining the interface to SFW as well as a small textual description of what they are supposed to be doing in general
+- Incorporate any SFW Suggestions, Implement any "adapter" calls in typescript, hardcode anything if needed
+- Report back and verify the whole thing works
+########################################################################################
+
+
+Integration 2 : Orchestrator / Offer Service
+
+- There are currently some bugs in the orchestrator that Lara said she will fix
+- Create a deployment that includes  the orchestrator "Demo" as well as the adapter Offer Service together in a single package
+
+[NOTE] We need an extra talk with AIMEN at some point about "Resource Offers" since I didn't mention it in the meeting but their demo does not seem to describe how this is done at all
+########################################################################################
+
+
+Integration 2 PART B : Orchestrator / Offer Service
+
+[OPTIONAL/SLA ??] 6. Work on the "Accept Offer" path the Orchestrator uses + SLA issues (AIMEN or other)
+
+########################################################################################
+
+Integration 3 : CORE
+
+- More or less the schema seems to be agreed, currently it uses a "service" but this might have to change 
+[NOTE] - Most tasks here are similar to Integration 1 but there is a general lack of feedback from CORE I think after we conclude 1 and with the lessons learned we should focus on doing the same thing with CORE
+in a more targeted way since they are not as responsive in my opinion
+
+
+
+ ########################################################################################
+
+ 
+
+
+Integration 4 : Ranking Service [OPTIONAL}
+
+- If there is time find how this could be done
+
+ 
+########################################################################################
+Integration Final:
+- Test all EE functionalites again using the final services
+- Deploy a hub in the cloud
+- Send everyone a script + instructions on what to do
+- Check that the Dataspace is running correctly
+
+
+
+
+
+BATCH 1
+-----------------------------
+- [ATLANTIS] Write an email explaining the interface to SFW as well as a small textual description of what they are supposed to be doing in general
+- [AIMEN] new demo deployment with some fixed issues
+
+
+
+BATCH 2
+- [ATLANTIS] Incorporate any SFW Suggestions, Implement any "adapter" calls in typescript, hardcode anything if needed
+- [ATLANTIS] Report back to Fraunhoffer and verify the whole thing works
+- [ATLANTIS] Create a deployment that includes  the orchestrator "Demo" as well as the adapter Offer Service and a connector together in a single package
+verify its use with the Execution Engine 
+- [ATLANTIS] Report back to AIMEN based on the the previous step and we will proceed further from that
+
+
+
+
+
+VOC HUB
+https://teams.microsoft.com/l/meetingrecap?driveId=b%21i3Dbp5HvkUGq60dBeZv2DogxYmy7b-ZHhNDE4aRahE-rWkp6XN_6TIJPcbwXatQj&driveItemId=01HLJJFAGTCKSGHJ2SGFFKKEIFRKXUHNRL&sitePath=https%3A%2F%2Fitigr-my.sharepoint.com%2F%3Av%3A%2Fg%2Fpersonal%2Fktsiakas_iti_gr%2FIQDTEqRjp1IxSqURBYqvQ7YrAQSbGC7X-9W-i9d_FaAul8U&fileUrl=https%3A%2F%2Fitigr-my.sharepoint.com%2F%3Av%3A%2Fg%2Fpersonal%2Fktsiakas_iti_gr%2FIQDTEqRjp1IxSqURBYqvQ7YrAQSbGC7X-9W-i9d_FaAul8U&iCalUid=040000008200E00074C5B7101A82E008000000000F32AAEEBFE9DC01000000000000000010000000965192AA2B4E984481273C066FC243D5&threadId=19%3Ameeting_ZjFhOGU0YTUtMTExMS00ZTAxLWJkZWUtMGFhYTQzZmU4Mzcw%40thread.v2&organizerId=ae8a8eea-513f-4a34-a4f6-a5711b2f5245&tenantId=507b504a-b6e0-4057-af27-c112405f4774&callId=4a6891fc-156b-4c65-bea9-12514abeba2e&threadType=Meeting&meetingType=Scheduled&subType=RecapSharingLink_RecapChiclet

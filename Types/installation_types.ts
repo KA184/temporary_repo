@@ -36,19 +36,25 @@ export type Hub_Installation_Descriptor = {
 
 }
 
-  
+  export type Linked_Service_Installation = {
+    Init:(parent:Connector_Installation_Descriptor)=>Promise<void>,
+    Start:()=>Promise<void>,
+    Drop:()=>Promise<void>,
+    Stop:()=>Promise<void>,
+};
 
 export type Linked_Producer_Service = {
-    Service_Folder: string,
+    //Service_Folder: string,
     Tag: string,
     DS_Name: string,
     DS_Description: string,
     Service_URL: string
     Test_With: string,
+    Installation:Linked_Service_Installation
 };
 
 export type Linked_Consumer_Service = {
-    Service_Folder: string,
+   Installation:Linked_Service_Installation
 
 };
 

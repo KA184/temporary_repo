@@ -9,6 +9,7 @@ import * as Path from "@std/path";
 import * as ini from "@std/ini";
 import * as yaml from "@std/yaml";
 import { CLI_RunnerT } from "./cli_runner.ts";
+import { tail } from "es-toolkit";
 let Read_Broker_Config = async (path) => {
 
 
@@ -173,7 +174,7 @@ namespace HUB_CALLS {
 
     }
 
-    export let Enroll = async (hub_url, participant: string, api_key: string) => {
+    export let Enroll = async (hub_url, participant: string, participant_url: string) => {
 
 
         let url = hub_url + "/CLI/Hub_Action"
@@ -182,14 +183,19 @@ namespace HUB_CALLS {
         let req = {
             type: 11,
             Enroll_Participant_ID: participant,
-            Enroll_Participant_URL: api_key,
+            Enroll_Participant_URL: participant_url,
 
         };
 
 
 
         let response = await fetch(url, { method: "POST", body: JSON.stringify(req) });
-        let reply = await response.json() as Participant_Added;
+        let text=await response.text();
+        if(!response.ok){
+            console.log("Error "+text);
+
+        }
+        let reply = await JSON.parse(text)  as Participant_Added;
 
         return reply;
 
