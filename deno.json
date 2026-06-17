@@ -1,9 +1,6 @@
 {
   "tasks": {
-    "dev": "deno run -A --node-modules-dir npm:vite",
-    "build": "deno run -A --node-modules-dir npm:vite build",
-    "preview": "deno run -A --node-modules-dir npm:vite preview",
-    "serve": "deno run --allow-net --allow-read jsr:@std/http@1/file-server dist/"
+    
   },
   "compilerOptions": {
     "lib": [
@@ -75,5 +72,9 @@
   "unstable": [
     "sloppy-imports"
   ],
-  "unsafelyIgnoreCertificateErrors":true
+  "unsafelyIgnoreCertificateErrors":true,
+  "name": "@atlantis1/idsclient",
+  "version": "0.1.0",
+  "license": "MIT",
+  "exports": "./lib.ts"
 }

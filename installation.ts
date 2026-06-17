@@ -6,77 +6,16 @@ import { Atlantis_IDS_Client, Create_Atlantis_IDS_Client } from "./Client.ts";
 
 import { CLI_Runner, CLI_RunnerT } from "./cli_runner.ts";
 
+import * as Path from "@std/path";
+import * as yaml from "@std/yaml";
 
 
-
-import { Internal, } from "./Types/api_types.ts";
+import { CLI, Internal, } from "./Types/api_types.ts";
 import { Connector_Installation_Descriptor, Connector_InstallationT, Hub_Installation_Descriptor, Hub_InstallationT, IDS_InstallationT, Linked_Service_Installation, Test_Dataspace_InstallationT } from "./Types/installation_types.ts";
 import { Util, Util_IDS } from "./Util.ts";
 import { NGINX_Helper, To_NGINX_Config_C, To_NGINX_Config_H } from "./nginx.ts";
 import { CLI_Runner2 } from "./cli_runner2.ts";
-
-// We are using two connectors C1, C2 at local ports 5001,5002
-
-
-
-// export async function Connector_Installation(
-//     ds_name: string,
-//     env: CLI.Connector_ENV,
-//     atl_ids: string,
-//     folder: string,
-//     create_folder: boolean
-// ) {
-
-
-//     let cli_runner = await CLI_Runner(atl_ids, folder);
-//     let api_client = await Create_Atlantis_IDS_Client(ds_name, env.IDS_CONNECTOR_ID, `http://127.0.0.1:${env.USE_PORT}`);
-
-//     let init = async (api_key) => {
-
-//         if (create_folder) {
-//             await $`mkdir -p ${folder}`;
-//         }
-//         env.IDS_API_KEY = api_key;
-
-
-
-//         await cli_runner.Connector.Config.Set(env)
-//         await cli_runner.Connector.Server.Init();
-//         await cli_runner.Connector.Server.Up();
-
-//     }
-
-//     let start = async () => {
-
-
-//         await cli_runner.Connector.Server.Up();
-
-//     }
-
-//     let stop = async () => {
-
-
-
-
-//         await cli_runner.Connector.Server.Down();
-
-
-//     }
-
-//     let drop = async () => {
-
-
-
-
-//         await cli_runner.Connector.Server.Remove();
-//         if (create_folder == true) {
-//             await $`rm -rf  ${folder}`;
-//         }
-
-//     }
-//     return { cli_runner, api_client, init, start, stop, drop, id: env.IDS_CONNECTOR_ID, };
-// }
-
+ 
 
 
 
@@ -89,7 +28,7 @@ export async function Hub_Installation(
     let cli_runner_hub = await CLI_Runner2(item.Client_Settings.Executable_Location, item.Client_Settings.Hub_Folder);
     //let api_client = null;//await Create_Atlantis_IDS_Client(ds_name, participant_id, `http://127.0.0.1:${port}`);
 
-    let init = async () => {
+    let init = async (Participants: CLI.Enroll_Participant_Spec[]) => {
 
         if (create_folder) {
             await $`mkdir -p ${item.Client_Settings.Hub_Folder}/broker`;
@@ -106,7 +45,7 @@ export async function Hub_Installation(
         await new Promise(resolve => setTimeout(resolve, item.Init_Settings.Delay_Before_Adding_Participants));
         let ret_api_keys: { [key: string]: string } = {};
 
-        for (let part of item.Init_Settings.Participants) {
+        for (let part of Participants) {
             let api_key = await cli_runner_hub.Hub.Enroll(part.PARTICIPANT_ID, part.URL);
             // `http://host.docker.internal:${service.Port}`);
             ret_api_keys[part.PARTICIPANT_ID] = api_key.API_KEY;
@@ -160,14 +99,7 @@ export async function Hub_Installation(
 
 
 
-//export type Hub_InstallationT = Awaited<ReturnType<typeof Hub_Installation>>;
-//export type Connector_InstallationT = Awaited<ReturnType<typeof Connector_Installation>>;
-
-
-
-//Expected_BASYX_Method()
-//Full_Test();
-
+ 
 
 
 export async function Connector_Installation(item: Connector_Installation_Descriptor) {
@@ -213,11 +145,11 @@ export async function Connector_Installation(item: Connector_Installation_Descri
         //await ci.start();//.Connector.Config.Set(env)
         if (linked_consumer != undefined) {
 
-             await linked_consumer.Installation.Init(item);
+            await linked_consumer.Installation.Init(item);
             //await $`docker compose up -d `.cwd(linked_consumer.Service_Folder);
         }
         if (linked_producer != undefined) {
-            await Util.sleep(item.Init_Settings.Delay_After_Connector_Start??5000);
+            await Util.sleep(item.Init_Settings.Delay_After_Connector_Start ?? 5000);
 
             let dataset = Service_Scripts.Build_Dataset(
                 item.Dataspace_Name,
@@ -247,12 +179,12 @@ export async function Connector_Installation(item: Connector_Installation_Descri
         //#CHANGE HERE--START
         //if (!Util.isNullOrWhiteSpace(item.Child_Service.Service_Folder)) {
         if (linked_producer != undefined) {
-             await linked_producer.Installation.Start();
+            await linked_producer.Installation.Start();
             //await $`docker compose up -d `.cwd(linked_producer.Service_Folder);
             //}
         }
         if (linked_consumer != undefined) {
-             await linked_consumer.Installation.Start();
+            await linked_consumer.Installation.Start();
             //await $`docker compose up -d `.cwd(linked_consumer.Service_Folder);
 
         }
@@ -273,7 +205,7 @@ export async function Connector_Installation(item: Connector_Installation_Descri
         }
 
         if (linked_consumer != undefined) {
-                await linked_consumer.Installation.Stop();
+            await linked_consumer.Installation.Stop();
             //await $`docker compose down  `.cwd(linked_consumer.Service_Folder);
         }
         //}
@@ -294,13 +226,13 @@ export async function Connector_Installation(item: Connector_Installation_Descri
         //if (!Util.isNullOrWhiteSpace(item.Child_Service.Service_Folder)) {
         if (linked_producer != undefined) {
 
-             await linked_producer.Installation.Drop();
+            await linked_producer.Installation.Drop();
             //await $`docker compose down --volumes `.cwd(linked_producer.Service_Folder);
         }
 
         if (linked_consumer != undefined) {
-                await linked_consumer.Installation.Drop();
-           // await $`docker compose down --volumes `.cwd(linked_consumer.Service_Folder);
+            await linked_consumer.Installation.Drop();
+            // await $`docker compose down --volumes `.cwd(linked_consumer.Service_Folder);
         }
         //}
         //#CHANGE HERE--END
@@ -323,10 +255,7 @@ export async function Connector_Installation(item: Connector_Installation_Descri
     } as Connector_InstallationT;
 }
 
-
-//export type Connector_Installation = Awaited<ReturnType<typeof Connector_Installation>>;
-
-
+ 
 
 export function Test_Dataspace_Installation(
     hub: Hub_Installation_Descriptor,
@@ -350,14 +279,7 @@ export function Test_Dataspace_Installation(
         for (let item of participants) {
 
             let installation = await Connector_Installation(item);
-            // let env = IDS_Env_Builder.Connector(item.Participant_ID, item.Port, common_settings);
-            // let installation = await Connector_Installation( 
-            //     common_settings.dataspace_name,
-            //     env,
-            //     common_settings.Dev.Executable_Location ,
-            //     common_settings.Dev.Resolve_Folder(env.IDS_CONNECTOR_ID),
-            //     true
-            //  );
+
 
 
 
@@ -374,10 +296,10 @@ export function Test_Dataspace_Installation(
 
 
 
-    let init = async () => {
+    let init = async (Participants: CLI.Enroll_Participant_Spec[]) => {
 
         let installations = await Get_Installations();
-        let api_keys = await installations.hub_installation.init();
+        let api_keys = await installations.hub_installation.init(Participants);
 
         for (let item of installations.participant_installations) {
 
@@ -439,20 +361,20 @@ export function Test_Dataspace_Installation(
 }
 
 
-export function Linked_Installation_DOCKER(folder:string):Linked_Service_Installation{
-    let ret:Linked_Service_Installation={
-      Init: async function (parent: Connector_Installation_Descriptor) {
-         await $`docker compose up -d `.cwd(folder);
-      },
-      Start: async function ()  {
-          await $`docker compose up -d `.cwd(folder);
-      },
-      Drop: async function () {
-          await $`docker compose down --volumes `.cwd(folder);
-      },
-      Stop: async function ()  {
-          await $`docker compose down  `.cwd(folder);
-      }
+export function Linked_Installation_DOCKER(folder: string): Linked_Service_Installation {
+    let ret: Linked_Service_Installation = {
+        Init: async function (parent: Connector_Installation_Descriptor) {
+            await $`docker compose up -d `.cwd(folder);
+        },
+        Start: async function () {
+            await $`docker compose up -d `.cwd(folder);
+        },
+        Drop: async function () {
+            await $`docker compose down --volumes `.cwd(folder);
+        },
+        Stop: async function () {
+            await $`docker compose down  `.cwd(folder);
+        }
     };
     return ret;
 
@@ -461,7 +383,76 @@ export function Linked_Installation_DOCKER(folder:string):Linked_Service_Install
 //export type Test_Dataspace_InstallationT = ReturnType<typeof Test_Dataspace_Installation>;
 
 
+export function Generic_Installation(
+    folder: string,
+    Get_DC: () => any,
+    Get_ENV: (() => string) | null = null
+) {
 
+
+
+
+    let create_folder = true;
+
+
+
+
+    let Init = async () => {
+
+        if (create_folder) {
+            await $`mkdir -p ${folder}`;
+        }
+
+
+
+        let docker_compose = yaml.stringify(Get_DC());
+
+        let docker_compose_path = Path.resolve(folder, "docker-compose.yml");
+
+
+
+
+        await Deno.writeTextFile(docker_compose_path, docker_compose);
+        if (Get_ENV != null) {
+            let env = Get_ENV();
+            let env_path = Path.resolve(folder, ".env");
+            await Deno.writeTextFile(env_path, env);
+        }
+        await $`docker compose up -d `.cwd(folder);
+
+        //#CHANGE HERE--END
+
+    }
+
+    let Start = async () => {
+
+
+        await $`docker compose up -d `.cwd(folder);
+        //#CHANGE HERE--END
+
+    }
+
+    let Stop = async () => {
+
+        await $`docker compose down `.cwd(folder);
+        //}
+        //#CHANGE HERE--END
+
+
+    }
+
+    let Drop = async () => {
+
+        await $`docker compose down --volumes`.cwd(folder);
+
+        await $`rm -rf ${folder} `;
+
+    }
+    return {
+        //service_folder: item.Child_Service.Service_Folder,
+        Init, Stop, Drop, Start
+    }
+}
 
 
 
@@ -481,8 +472,15 @@ export async function CLI_Parser(installation: IDS_InstallationT, Post_Init_Scri
             installation.init(arg1);
 
         }
-        else {
-            await installation.init();
+        else if (installation.type == "TD") {
+            let participant_spec = (await installation.Get_Installations()).participant_installations.map(x=>({
+                PARTICIPANT_ID: x.item.Config.ENV.IDS_CONNECTOR_ID,
+                URL: x.item.Config.External_URL
+            }));
+            await installation.init(participant_spec);
+        }
+        else if (installation.type == "HUB") {
+            await installation.init([]);
         }
         await Post_Init_Script();
     }

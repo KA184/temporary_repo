@@ -30,7 +30,7 @@ export type Hub_Installation_Descriptor = {
 
     Init_Settings:
     {
-        Participants: CLI.Enroll_Participant_Spec[],
+       // Participants: CLI.Enroll_Participant_Spec[],
         Delay_Before_Adding_Participants: number
     }
 
@@ -106,7 +106,7 @@ export type Hub_InstallationT = {
     item: Hub_Installation_Descriptor,
     cli_runner: CLI_RunnerT,
 
-    init: () => Promise<{ [key: string]: string }>,
+    init: (Participants: CLI.Enroll_Participant_Spec[]) => Promise<{ [key: string]: string }>,
     stop: () => Promise<void>,
     drop: () => Promise<void>,
     start: () => Promise<void>,
@@ -122,7 +122,7 @@ export type Test_Dataspace_InstallationT = {
         participant_installations: Connector_InstallationT[];
     }>
 
-    init: () => Promise<void>,
+    init: (Participants: CLI.Enroll_Participant_Spec[]) => Promise<void>,
     stop: () => Promise<void>,
     drop: () => Promise<void>,
     start: () => Promise<void>,
