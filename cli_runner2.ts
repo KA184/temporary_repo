@@ -205,7 +205,7 @@ namespace HUB_CALLS {
 
 
 
-export function CLI_Runner2(atl_ids_ignored: string,path): CLI_RunnerT {
+export function CLI_Runner2(atl_ids_ignored: string,path:string): CLI_RunnerT {
 
     let broker_path = Path.resolve(path, "broker");
     let kc_path = Path.resolve(path, "kc");

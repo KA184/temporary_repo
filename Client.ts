@@ -1,78 +1,115 @@
- 
-import { Entities, Internal, Messages, Responses } from "./Types/api_types.ts";
-import { guid, Util_IDS } from "./Util.ts";
 
- 
+import type { Entities, Internal, Messages, Responses } from "./Types/api_types.ts";
+import { guid } from "./Util.ts";
 
-export type Atlantis_IDS_Client= ReturnType<typeof Create_Atlantis_IDS_Client>;
- 
-export function Create_Atlantis_IDS_Client(ds_name:string, participant_id, url)
-{
 
-     
-    let rdr=()=>url;
-   let {Create,...calls_tr}=BEC_Transfer_Admin(rdr);
-   let {Agree,...calls_neg}=BEC_Neg_Admin(rdr);
-   let mod_calls= BEC_Saving_Operations(rdr);
 
-   let {Get_Endpoint}= New_Operations(rdr);
+//export type Atlantis_IDS_Client = ReturnType<typeof Create_Atlantis_IDS_Client>;
 
-   let calls_read=BEC_Read(rdr);
-    
-   return {
-    Create_Transfer:Create,
-    Agree,
-	Get_Endpoint:async (x:Messages.Get_Endpoint_MSG)=>{
-        let res=await Get_Endpoint(x);
-         
-        return res;
-    },
-    //edo prepei na ginei GET CONNECTION
 
-    Search: calls_read.Search,
-    Datasets:{
-        Local:calls_read.Datasets,
-        AgreedTo:calls_read.DatasetsAgreedTo,
+
+export type Atlantis_IDS_Client = {
+    Create_Transfer: (AgreementID: string, Format: string) => Promise<Responses.Process_Created_Response>,
+    Agree: (DatasetID: string, OfferID: string) => Promise<Responses.Process_Created_Response>,
+    Get_Endpoint: (x: Messages.Get_Endpoint_MSG) => Promise<Messages.Get_Endpoint_RESPONSE>,
+    Search: (query: Messages.FederatedSearchQuery) => Promise<Entities.Protocol.Dataset[]>,
+    Datasets: {
+        Local: () => Promise<Entities.Dataset_Report[]>,
+        AgreedTo: () => Promise<Entities.Dataset_Agreed_To_Report[]>,
     },
 
-    Manage:{
-        Negotiations:calls_neg,
-        Transfers:calls_tr,
-       
+    Manage: {
+        Negotiations: {
+            State: (Negotiation_Cid_Or_PID: string) => Promise<Entities.Negotiation_State>
+        },
+        Transfers: {
+            State: (Transfer_Cid_Or_PID: string) => Promise<Entities.Transfer_State>;
+            Start: (Transfer_Cid_Or_PID: string) => Promise<Entities.Protocol.TransferProcess | Entities.Protocol.TransferError>;
+            Suspend: (Transfer_Cid_Or_PID: string) => Promise<Entities.Protocol.TransferProcess | Entities.Protocol.TransferError>;
+            Complete: (Transfer_Cid_Or_PID: string) => Promise<Entities.Protocol.TransferProcess | Entities.Protocol.TransferError>;
+            Terminate: (Transfer_Cid_Or_PID: string) => Promise<Entities.Protocol.TransferProcess | Entities.Protocol.TransferError>
+
+
+        }
     },
 
-    Mod_Ops:{
-        Upsert:mod_calls.Upsert
+    Mod_Ops: {
+        Upsert: (msg: Internal.Internal_Dataset) => Promise<string>
     },
 
-	Dataspace_Name:ds_name,
-	Participant_ID:participant_id,
-     
+    Dataspace_Name: string,
+    Participant_ID: string,
+    Get_Token: () => Promise<string>
 
-    //TEMP
-     Get_Token: async () => {
-
-        // var url = rdr() + "/" + controller(req.Table) + "/Rows_Excel";
-       
-        let ret = await fetch(
-              url + `/DataPlane/ConnectorToken/`,
-            {
-                method: 'GET',
-                //  body: JSON.stringify(req)
-            }
-         );
-         let ret2=await ret.text();
-         //.then(x=>x.text());
-
-        
-        return ret2; 
-
-    },
-   }
 }
 
-function BEC_Neg_Admin(rdr:()=>string) {
-     let Agree=async function (DatasetID: string, OfferID: string) {
+
+export function Create_Atlantis_IDS_Client(ds_name: string, participant_id:string, url:string): Atlantis_IDS_Client {
+
+
+    let rdr = () => url;
+    let { Create, ...calls_tr } = BEC_Transfer_Admin(rdr);
+    let { Agree, ...calls_neg } = BEC_Neg_Admin(rdr);
+    let mod_calls = BEC_Saving_Operations(rdr);
+
+    let { Get_Endpoint } = New_Operations(rdr);
+
+    let calls_read = BEC_Read(rdr);
+
+    return {
+        Create_Transfer: Create,
+        Agree,
+        Get_Endpoint: async (x: Messages.Get_Endpoint_MSG) => {
+            let res = await Get_Endpoint(x);
+
+            return res;
+        },
+        //edo prepei na ginei GET CONNECTION
+
+        Search: calls_read.Search,
+        Datasets: {
+            Local: calls_read.Datasets,
+            AgreedTo: calls_read.DatasetsAgreedTo,
+        },
+
+        Manage: {
+            Negotiations: calls_neg,
+            Transfers: calls_tr,
+
+        },
+
+        Mod_Ops: {
+            Upsert: mod_calls.Upsert
+        },
+
+        Dataspace_Name: ds_name,
+        Participant_ID: participant_id,
+
+
+        //TEMP
+        Get_Token: async () => {
+
+            // var url = rdr() + "/" + controller(req.Table) + "/Rows_Excel";
+
+            let ret = await fetch(
+                url + `/DataPlane/ConnectorToken/`,
+                {
+                    method: 'GET',
+                    //  body: JSON.stringify(req)
+                }
+            );
+            let ret2 = await ret.text();
+            //.then(x=>x.text());
+
+
+            return ret2;
+
+        },
+    }
+}
+
+function BEC_Neg_Admin(rdr: () => string) {
+    let Agree = async function (DatasetID: string, OfferID: string) {
         let msg: Messages.Negotiation__Begin_As_Consumer = {
             ID: guid(),
             ds_id: DatasetID,
@@ -89,13 +126,13 @@ function BEC_Neg_Admin(rdr:()=>string) {
 
         );
         let reply = await resp.text();
-		//todo
+        //todo
         return JSON.parse(reply) as Responses.Process_Created_Response;
 
     }
 
 
-    let Status=async function(Negotiation_Cid_Or_PID: string) {
+    let Status = async function (Negotiation_Cid_Or_PID: string) {
 
         let resp = await fetch(
             rdr() + "/ClientAPI/Negotiation/Status/" + Negotiation_Cid_Or_PID,
@@ -112,15 +149,15 @@ function BEC_Neg_Admin(rdr:()=>string) {
 
     }
 
-    return{
-        Agree,State: Status
+    return {
+        Agree, State: Status
     }
 
 }
 
-function BEC_Transfer_Admin (rdr:()=>string){
+function BEC_Transfer_Admin(rdr: () => string) {
 
-    let Create= async function (AgreementID: string, Format: string) {
+    let Create = async function (AgreementID: string, Format: string) {
         let msg: Messages.Transfer__BeginAsConsumer = {
             ID: guid(),
             AgreementID: AgreementID,
@@ -136,7 +173,7 @@ function BEC_Transfer_Admin (rdr:()=>string){
             }
 
         );
-		//todo
+        //todo
         let reply = await resp.text();
 
         return JSON.parse(reply) as Responses.Process_Created_Response;
@@ -144,7 +181,7 @@ function BEC_Transfer_Admin (rdr:()=>string){
     }
 
 
-   
+
     let Status = async function (Transfer_Cid_Or_PID: string) {
 
         let resp = await fetch(
@@ -162,10 +199,10 @@ function BEC_Transfer_Admin (rdr:()=>string){
 
     }
 
-     let __call= async function (Transfer_Cid_Or_PID: string, type: string) {
+    let __call = async function (Transfer_Cid_Or_PID: string, type: string) {
 
         let resp = await fetch(
-            rdr() + `/ClientAPI/Transfer/${type}`  ,
+            rdr() + `/ClientAPI/Transfer/${type}`,
 
             {
                 body: JSON.stringify({ ID: Transfer_Cid_Or_PID }),
@@ -176,31 +213,31 @@ function BEC_Transfer_Admin (rdr:()=>string){
         );
         let reply = await resp.text();
 
-        return JSON.parse(reply) as Entities.Protocol.TransferProcess|Entities.Protocol.TransferError;
+        return JSON.parse(reply) as Entities.Protocol.TransferProcess | Entities.Protocol.TransferError;
 
     }
 
-    let Start= async function (Transfer_Cid_Or_PID: string) {
+    let Start = async function (Transfer_Cid_Or_PID: string) {
 
         let ret = await __call(Transfer_Cid_Or_PID, "Start");
         return ret;
 
     }
 
-    let Suspend= async function (Transfer_Cid_Or_PID: string) {
+    let Suspend = async function (Transfer_Cid_Or_PID: string) {
 
         let ret = await __call(Transfer_Cid_Or_PID, "Suspend");
         return ret;
 
     }
-    let Complete= async function (Transfer_Cid_Or_PID: string) {
+    let Complete = async function (Transfer_Cid_Or_PID: string) {
 
         let ret = await __call(Transfer_Cid_Or_PID, "Complete");
         return ret;
 
     }
 
-    let Terminate= async function (Transfer_Cid_Or_PID: string) {
+    let Terminate = async function (Transfer_Cid_Or_PID: string) {
 
         let ret = await __call(Transfer_Cid_Or_PID, "Terminate");
         return ret;
@@ -208,13 +245,13 @@ function BEC_Transfer_Admin (rdr:()=>string){
     }
 
     return {
-            Create,State: Status, Start, Suspend, Complete, Terminate
+        Create, State: Status, Start, Suspend, Complete, Terminate
     };
-   
+
 
 }
-function BEC_Read (rdr:()=>string){
-    let Datasets= async function () {
+function BEC_Read(rdr: () => string) {
+    let Datasets = async function () {
         let resp = await fetch(
             rdr() + "/ClientAPI/View/Datasets",
 
@@ -228,7 +265,7 @@ function BEC_Read (rdr:()=>string){
 
     }
 
-    let DatasetsAgreedTo= async function () {
+    let DatasetsAgreedTo = async function () {
         let resp = await fetch(
             rdr() + "/ClientAPI/View/DatasetsAgreedTo",
 
@@ -242,7 +279,7 @@ function BEC_Read (rdr:()=>string){
 
     }
 
-    let Search= async function (query: Messages.FederatedSearchQuery) {
+    let Search = async function (query: Messages.FederatedSearchQuery) {
         let resp = await fetch(
             rdr() + "/ClientAPI/Search",
 
@@ -258,14 +295,14 @@ function BEC_Read (rdr:()=>string){
 
     }
 
-    return {Datasets,DatasetsAgreedTo, Search}
+    return { Datasets, DatasetsAgreedTo, Search }
 
 }
 
 
 
-function BEC_Saving_Operations (rdr:()=>string){
-    let Upsert= async function (msg:Internal.Internal_Dataset) {
+function BEC_Saving_Operations(rdr: () => string) {
+    let Upsert = async function (msg: Internal.Internal_Dataset) {
         let resp = await fetch(
             rdr() + "/ClientAPI/Upsert",
 
@@ -276,19 +313,19 @@ function BEC_Saving_Operations (rdr:()=>string){
 
         );
         let reply = await resp.text();
-        return reply ;
+        return reply;
 
     }
 
-   
-    return {Upsert}
+
+    return { Upsert }
 
 }
 
 
 
-function New_Operations (rdr:()=>string){
-    let Get_Endpoint= async function (msg:Messages.Get_Endpoint_MSG) {
+function New_Operations(rdr: () => string) {
+    let Get_Endpoint = async function (msg: Messages.Get_Endpoint_MSG) {
         let resp = await fetch(
             rdr() + "/ClientAPI/Get_Endpoint",
 
@@ -299,12 +336,12 @@ function New_Operations (rdr:()=>string){
 
         );
         let reply = await resp.json() as Messages.Get_Endpoint_RESPONSE;
-        
-        return reply ;
+
+        return reply;
 
     }
 
-   
-    return {Get_Endpoint}
+
+    return { Get_Endpoint }
 
 }

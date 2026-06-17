@@ -2,11 +2,44 @@
 import $ from "dax";
  
 import * as ini from "@std/ini";
-import { CLI_Config } from "./Types/config_types.ts";
-import { CLI } from "./Types/api_types.ts";
+import type { CLI_Config } from "./Types/config_types.ts";
+import type { CLI } from "./Types/api_types.ts";
  
 
-export function CLI_Runner(atl_ids: string, path: string) {
+export type CLI_RunnerT = {
+    Pull: () => Promise<void>;
+    Hub: {
+        Config: {
+            Init: () => Promise<void>;
+            Set_Broker_Config: (settings: CLI_Config.Hub_ENV) => Promise<void>;
+            Read_Broker_Config: () => Promise<CLI_Config.Hub_ENV>;
+            Read_KC_Config: () => Promise<CLI_Config.KC_ENV>;
+            Set_KC_Config: (settings: CLI_Config.KC_ENV) => Promise<void>;
+        };
+        Server: {
+            Init: () => Promise<void>;
+            Up: () => Promise<void>;
+            Down: () => Promise<void>;
+            Remove: () => Promise<void>;
+        };
+        Enroll: (Participant_ID: string, Connector_URL: string) => Promise<CLI.Enroll_Reply>;
+    };
+    Connector: {
+        Config: {
+            Init: () => Promise<void>;
+            Read: () => Promise<CLI_Config.Connector_ENV>;
+            Set: (settings: CLI_Config.Connector_ENV) => Promise<void>;
+            Set_API_KEY: (api_key: string) => Promise<void>;
+        };
+        Server: {
+            Init: () => Promise<void>;
+            Up: () => Promise<void>;
+            Down: () => Promise<void>;
+            Remove: () => Promise<void>;
+        };
+    };
+};
+export function CLI_Runner(atl_ids: string, path: string):CLI_RunnerT  {
 
     let ret = {
         Pull: async () => {
@@ -203,7 +236,7 @@ export function CLI_Runner(atl_ids: string, path: string) {
     return ret;
 }
 
-export type CLI_RunnerT=ReturnType<typeof CLI_Runner>;
+//export type CLI_RunnerT=ReturnType<typeof CLI_Runner>;
 
 // atl-ids pull	Pulls the latest docker images of the Atlantis IDS Components
 // atl-ids hub config init	Initializes a file with default configuration environment variables for an Atlantis IDS Hub at .env

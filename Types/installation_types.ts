@@ -1,9 +1,9 @@
 
 
-import { CLI_RunnerT } from "../cli_runner.ts";
-import { Atlantis_IDS_Client } from "../Client.ts";
-import { CLI } from "./api_types.ts";
-import { CLI_Config } from "./config_types.ts";
+import type { CLI_RunnerT } from "../cli_runner.ts";
+import type { Atlantis_IDS_Client } from "../Client.ts";
+import type { CLI } from "./api_types.ts";
+import type { CLI_Config } from "./config_types.ts";
 
 
  
@@ -130,5 +130,16 @@ export type Test_Dataspace_InstallationT = {
 
     type: "TD"
 }
+
+export type Generic_InstallationT = {
+   
+    Init: ( ) => Promise<void>,
+    Stop: () => Promise<void>,
+    Drop: () => Promise<void>,
+    Start: () => Promise<void>,
+
+     
+}
+
 
 export type IDS_InstallationT = Connector_InstallationT | Hub_InstallationT | Test_Dataspace_InstallationT;

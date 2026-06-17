@@ -1,17 +1,17 @@
 
 import $ from "dax";
-import { Atlantis_IDS_Client, Create_Atlantis_IDS_Client } from "./Client.ts";
+import {  Create_Atlantis_IDS_Client } from "./Client.ts";
 
 
 
-import { CLI_Runner, CLI_RunnerT } from "./cli_runner.ts";
+ 
 
 import * as Path from "@std/path";
 import * as yaml from "@std/yaml";
 
 
-import { CLI, Internal, } from "./Types/api_types.ts";
-import { Connector_Installation_Descriptor, Connector_InstallationT, Hub_Installation_Descriptor, Hub_InstallationT, IDS_InstallationT, Linked_Service_Installation, Test_Dataspace_InstallationT } from "./Types/installation_types.ts";
+import type { CLI, Internal, } from "./Types/api_types.ts";
+import type { Connector_Installation_Descriptor, Connector_InstallationT, Generic_InstallationT, Hub_Installation_Descriptor, Hub_InstallationT, IDS_InstallationT, Linked_Service_Installation, Test_Dataspace_InstallationT } from "./Types/installation_types.ts";
 import { Util, Util_IDS } from "./Util.ts";
 import { NGINX_Helper, To_NGINX_Config_C, To_NGINX_Config_H } from "./nginx.ts";
 import { CLI_Runner2 } from "./cli_runner2.ts";
@@ -19,8 +19,9 @@ import { CLI_Runner2 } from "./cli_runner2.ts";
 
 
 
-export async function Hub_Installation(
-    item: Hub_Installation_Descriptor) {
+export async function Hub_Installation
+(
+    item: Hub_Installation_Descriptor):Promise<Hub_InstallationT> {
 
 
     let create_folder = true;
@@ -102,7 +103,7 @@ export async function Hub_Installation(
  
 
 
-export async function Connector_Installation(item: Connector_Installation_Descriptor) {
+export async function Connector_Installation(item: Connector_Installation_Descriptor):Promise<Connector_InstallationT> {
 
 
     let env = item.Config.ENV;
@@ -260,7 +261,7 @@ export async function Connector_Installation(item: Connector_Installation_Descri
 export function Test_Dataspace_Installation(
     hub: Hub_Installation_Descriptor,
     participants: Connector_Installation_Descriptor[]
-) {
+) : Test_Dataspace_InstallationT  {
 
 
 
@@ -387,7 +388,7 @@ export function Generic_Installation(
     folder: string,
     Get_DC: () => any,
     Get_ENV: (() => string) | null = null
-) {
+) :Generic_InstallationT{
 
 
 
